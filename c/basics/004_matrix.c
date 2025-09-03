@@ -8,7 +8,7 @@ typedef struct {
 } Matrix;
 
 
-Matrix *create_matrix(unsigned int c, unsigned int r, int init) {
+Matrix *create_matrix(unsigned int r, unsigned int c, int init) {
   Matrix *new_mat = malloc(sizeof(Matrix));
 
   new_mat->rows = r;

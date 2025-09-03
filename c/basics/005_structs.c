@@ -11,7 +11,7 @@ typedef struct {
 TextBuffer *create_text_buffer() {
   TextBuffer *new_buffer = malloc(sizeof(TextBuffer));
 
-  new_buffer->lines = NULL;
+  new_buffer->lines = malloc(10 * sizeof(char *));
   new_buffer->count = 0;
   new_buffer->capacity = 10;
 
@@ -42,11 +42,12 @@ void free_text_buffer(TextBuffer *b) {
 }
 
 void add_line(TextBuffer *b, char *s) {
-  int new_capacity = (b->count + strlen(s)) + 10;
+  int new_capacity = b->capacity;
   char *new_line = malloc(sizeof(char) * strlen(s) + 1);
   strcpy(new_line, s);
 
-  if (b->capacity < new_capacity) {
+  if (b->count >= b->capacity) {
+    new_capacity = b->capacity * 2;
     b->lines = realloc(b->lines, sizeof(char *) * (new_capacity));
     b->capacity = new_capacity;
   }
