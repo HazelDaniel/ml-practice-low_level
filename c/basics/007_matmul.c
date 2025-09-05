@@ -18,6 +18,12 @@ Matrix *create_matrix(unsigned int r, unsigned int c, int init) {
   return new_mat;
 }
 
+void destroy_matrix(Matrix *m) {
+  free(m->data);
+
+  free(m);
+}
+
 void print_matrix(Matrix *m) {
   for (int i = 0; i < (m->rows) * (m->columns); i++) {
     if ((i + 1) % (m->columns) == 0) { // TODO: not confident of this chunking strategy, look into it later
@@ -88,7 +94,7 @@ float mat_get(Matrix *m, int r, int c) {
     exit(-1);
   }
 
-  return (m->data)[((r - 1) * (m->columns)) + c - 1];
+  return *(m->data + (((r - 1) * (m->columns)) + c - 1));
 }
 
 Matrix *mat_add(Matrix *m, Matrix *n) {
@@ -170,24 +176,18 @@ int main (void) {
 
   if (sum_mat) {
     // print_matrix(sum_mat);
-    free(sum_mat->data);
-    free(sum_mat);
+    destroy_matrix(sum_mat);
   }
 
   mul_mat = mat_mul(new_mat, new_mat_b);
 
   if (mul_mat) {
     print_matrix(mul_mat);
-    free(mul_mat->data);
-    free(mul_mat);
+    destroy_matrix(mul_mat);
   }
 
-  free(new_mat->data);
-  free(new_mat);
-
-  free(new_mat_b->data);
-  free(new_mat_b);
-
+  destroy_matrix(new_mat);
+  destroy_matrix(new_mat_b);
 
   return 0;
 }
