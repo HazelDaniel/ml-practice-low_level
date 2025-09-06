@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "matrix.h"
 
 //UTILS
 /**
@@ -37,22 +38,6 @@ int overwrite_string(char *dest, const char *src, size_t offset, int destlen, in
     // just stop at the null terminator and leave the rest of dest as-is.
     return i;
 }
-
-typedef struct {
-  char **lines;
-  int count;
-  int capacity;
-} TextBuffer;
-
-void free_text_buffer(TextBuffer *);
-void add_line(TextBuffer *b, char *s);
-
-typedef struct {
-  int rows;
-  int columns;
-  float *data;
-} Matrix;
-
 
 Matrix *create_matrix(unsigned int r, unsigned int c, int init) {
   Matrix *new_mat = malloc(sizeof(Matrix));

@@ -1,17 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
-
-typedef enum {
-  VERTICAL = 0,
-  HORIZONTAL
-} VecOrientation;
-
-typedef struct {
-  size_t size;
-  float *data;
-  VecOrientation orientation;
-} Vector;
+#include <stdio.h>
+#include "vector.h"
 
 Vector *init_vector(size_t size) {
   Vector *new_vec = malloc(sizeof(Vector));
@@ -130,11 +119,11 @@ float vec_norm(Vector *v) {
 void print_vec(Vector *v) {
   if (v->orientation == VERTICAL) {
     printf("[vector (%p)]\n", (void *)v);
-    printf("-------\n");
+    printf(".-------\n");
     for (size_t i = 0; i < v->size; i++) {
       if (i == v->size - 1) {
         printf("|%.3f|\n", (v->data)[i]);
-        printf("-------\n");
+        printf(".-------\n");
       } else {
         printf("|%.3f|\n", (v->data)[i]);
       }
@@ -152,51 +141,50 @@ void print_vec(Vector *v) {
   }
 }
 
-
 int main(void) {
-    // Initialize two vectors of size 3
-    Vector *v1 = init_vector(3);
-    Vector *v2 = init_vector(3);
+  // Initialize two vectors of size 3
+  Vector *v1 = init_vector(3);
+  Vector *v2 = init_vector(3);
 
-    // Populate vectors
-    float vals1[] = {1.0f, 2.0f, 3.0f};
-    float vals2[] = {4.0f, 5.0f, 6.0f};
-    vec_set(v1, vals1, 3);
-    vec_set(v2, vals2, 3);
+  // Populate vectors
+  float vals1[] = {1.0f, 2.0f, 3.0f};
+  float vals2[] = {4.0f, 5.0f, 6.0f};
+  vec_set(v1, vals1, 3);
+  vec_set(v2, vals2, 3);
 
-    printf("Vector v1:\n");
-    print_vec(v1);
-    printf("Vector v2:\n");
-    print_vec(v2);
+  printf("Vector v1:\n");
+  print_vec(v1);
+  printf("Vector v2:\n");
+  print_vec(v2);
 
-    // Sum
-    Vector *sum = vec_sum(v1, v2);
-    printf("\nSum (v1 + v2):\n");
-    print_vec(sum);
+  // Sum
+  Vector *sum = vec_sum(v1, v2);
+  printf("\nSum (v1 + v2):\n");
+  print_vec(sum);
 
-    // Sub
-    Vector *sub = vec_sub(v1, v2);
-    printf("\nSubtraction (v1 - v2):\n");
-    print_vec(sub);
+  // Sub
+  Vector *sub = vec_sub(v1, v2);
+  printf("\nSubtraction (v1 - v2):\n");
+  print_vec(sub);
 
-    // Dot product
-    float dot = vec_dot(v1, v2);
-    printf("\nDot product (v1 . v2): %.3f\n", dot);
+  // Dot product
+  float dot = vec_dot(v1, v2);
+  printf("\nDot product (v1 . v2): %.3f\n", dot);
 
-    // Norms
-    printf("\nNorm of v1: %.3f\n", vec_norm(v1));
-    printf("Norm of v2: %.3f\n", vec_norm(v2));
+  // Norms
+  printf("\nNorm of v1: %.3f\n", vec_norm(v1));
+  printf("Norm of v2: %.3f\n", vec_norm(v2));
 
-    // Change orientation of sum
-    sum->orientation = HORIZONTAL;
-    printf("\nSum vector (horizontal orientation):\n");
-    print_vec(sum);
+  // Change orientation of sum
+  sum->orientation = HORIZONTAL;
+  printf("\nSum vector (horizontal orientation):\n");
+  print_vec(sum);
 
-    // Cleanup
-    destroy_vector(v1);
-    destroy_vector(v2);
-    destroy_vector(sum);
-    destroy_vector(sub);
+  // Cleanup
+  destroy_vector(v1);
+  destroy_vector(v2);
+  destroy_vector(sum);
+  destroy_vector(sub);
 
-    return 0;
+  return 0;
 }
