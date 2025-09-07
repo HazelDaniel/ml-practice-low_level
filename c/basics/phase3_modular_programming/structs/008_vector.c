@@ -141,6 +141,8 @@ void print_vec(Vector *v) {
   }
 }
 
+#ifndef __INCLUDE__
+
 int main(void) {
   // Initialize two vectors of size 3
   Vector *v1 = init_vector(3);
@@ -188,3 +190,5 @@ int main(void) {
 
   return 0;
 }
+
+#endif
