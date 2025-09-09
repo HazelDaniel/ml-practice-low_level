@@ -2,6 +2,7 @@
 #define ___F_POINTERS___
 
 // #include "../../include/barrel.h"
+#include "hash_tables.h"
 #include "barrel.h"
 
 
@@ -13,9 +14,8 @@ typedef enum {
 } IntegrationRule;
 typedef double (*unary_op)(double);
 typedef double (*binary_op)(double, double);
-typedef double (*integral_sum_fn)(unary_op, double, double, size_t);
 typedef struct {
-  integral_sum_fn integrate;
+  bin_op_caller_on_range integrate;
   IntegrationRule rule;
   unary_op op;
 } Integrator;

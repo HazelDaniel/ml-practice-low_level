@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include "f_pointers.h"
+#include "hash_tables.h"
 #include "unary_fns.h"
 
-static hash_table_p_t *integral_hash;
+static hash_table_p_t integral_hash;
 
 void apply_to_vec2(Vector *v, float x, binary_op f) {
   for (size_t i = 0; i < v->size; i++) {
@@ -102,14 +103,14 @@ Integrator *create_integrator(unary_op op) {
 
   new_integrator->op = op;
   new_integrator->rule = RECTANGLE;
-  new_integrator->integrate = (integral_sum_fn)reimann_sum;
+  new_integrator->integrate = (bin_op_caller_on_range)reimann_sum;
 
   return new_integrator;
 }
 
 void apply_integrator(IntegrationRule rule, Integrator *integrator) {
   void *v = f_hash_table_get(integral_hash, rule);
-  integral_sum_fn fn = (integral_sum_fn)v;
+  bin_op_caller_on_range fn = (bin_op_caller_on_range)v;
 
   integrator->rule = rule;
   integrator->integrate = fn;
@@ -120,18 +121,18 @@ void destroy_integrator(Integrator *i) {
 }
 
 int main(void) {
-  integral_hash = f_hash_table_create(10);
   double res = 0.0f;
 
-  f_hash_table_set(integral_hash, SIMPSON, (void *)simpson_sum);
-  f_hash_table_set(integral_hash, RECTANGLE, (void *)reimann_sum);
-  f_hash_table_set(integral_hash, TRAPEZOIDAL, (void *)trapezoidal_sum);
+  integral_hash = f_hash_table_create(10);
+  f_hash_table_set(integral_hash, SIMPSON, (bin_op_caller_on_range)simpson_sum);
+  f_hash_table_set(integral_hash, RECTANGLE, (bin_op_caller_on_range)reimann_sum);
+  f_hash_table_set(integral_hash, TRAPEZOIDAL, (bin_op_caller_on_range)trapezoidal_sum);
 
   Integrator *i = create_integrator(square);
 
   // apply_integrator(TRAPEZOIDAL, i);
   if (i->integrate) {
-    res = i->integrate(i->op, 0, 1, 10);
+    res = i->integrate(i->op, 0, 1, 4);
     printf("result of trapezoidal integration is %.3f\n", res);
   } else {
     printf("integration not applied successfully!\n");
