@@ -26,7 +26,7 @@ double dot_custom(Vector *u, Vector *v, binary_op f) {
   return dot;
 }
 
-double reimann_sum(unary_op fn, int a, int b, size_t n) {
+double riemann_sum(unary_op fn, int a, int b, size_t n) {
   double sum = 0.0f;
   int interval = b - a;
 
@@ -74,6 +74,13 @@ double simpson_sum(unary_op fn, int a, int b, size_t n) {
   double even_sum = 0.0f;
   int interval = b - a;
 
+  if (n % 2) {
+    printf("[operation error]: invalid size of n.\
+      simpson's rule allows for only even n!\n");
+
+    return sum;
+  }
+
   if (a == b) {
     return 0;
   }
@@ -101,7 +108,7 @@ Integrator *create_integrator(unary_op op) {
 
   new_integrator->op = op;
   new_integrator->rule = RECTANGLE;
-  new_integrator->integrate = (bin_op_caller_on_range)reimann_sum;
+  new_integrator->integrate = (bin_op_caller_on_range)riemann_sum;
 
   return new_integrator;
 }
@@ -123,17 +130,20 @@ int main(void) {
 
   integral_hash = f_hash_table_create(10);
   f_hash_table_set(integral_hash, SIMPSON, (bin_op_caller_on_range)simpson_sum);
-  f_hash_table_set(integral_hash, RECTANGLE, (bin_op_caller_on_range)reimann_sum);
+  f_hash_table_set(integral_hash, RECTANGLE, (bin_op_caller_on_range)riemann_sum);
   f_hash_table_set(integral_hash, TRAPEZOIDAL, (bin_op_caller_on_range)trapezoidal_sum);
 
   Integrator *i = create_integrator(square);
 
-  apply_integrator(SIMPSON, i);
-  if (i->integrate) {
-    res = i->integrate(i->op, 0, 1, 100);
-    printf("result of integration is %.3f\n", res);
-  } else {
-    printf("integration not applied successfully!\n");
+  IntegrationRule rules[] = {RECTANGLE, TRAPEZOIDAL, SIMPSON};
+  const char *names[] = {"Rectangle", "Trapezoidal", "Simpson"};
+
+  for (int k = 0; k < 3; k++) {
+    apply_integrator(rules[k], i);
+    if (i->integrate) {
+      res = i->integrate(i->op, 0, 1, 100);
+      printf("%s Rule: result = %.6f\n", names[k], res);
+    }
   }
 
   destroy_integrator(i);
