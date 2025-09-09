@@ -29,7 +29,6 @@ double dot_custom(Vector *u, Vector *v, binary_op f) {
 double reimann_sum(unary_op fn, int a, int b, size_t n) {
   double sum = 0.0f;
   int interval = b - a;
-  printf("n is %u\n", (unsigned int)n);
 
   if (a == b) {
     return 0;
@@ -39,7 +38,7 @@ double reimann_sum(unary_op fn, int a, int b, size_t n) {
 
   // USING MIDPOINT
   for (float i = 1; i <= n; i++) {
-    sum += fn(a + i + (i - 1) * (h / 2));
+    sum += fn(a + (i - 0.5f) * (h));
   }
 
   sum *= h;
@@ -51,7 +50,6 @@ double trapezoidal_sum(unary_op fn, int a, int b, size_t n) {
   double sum = 0.0f;
   double half_sum = 0.0f;
   int interval = b - a;
-  printf("n is %u\n", (unsigned int)n);
 
   if (a == b) {
     return 0;
@@ -82,7 +80,7 @@ double simpson_sum(unary_op fn, int a, int b, size_t n) {
 
   float h = (float)interval / n;
 
-  for (size_t i = 1; i <= n - 1; i++) {
+  for (size_t i = 1; i <= n - 1; i += 2) {
     odd_sum += fn(a + i * h);
   }
 
@@ -130,10 +128,10 @@ int main(void) {
 
   Integrator *i = create_integrator(square);
 
-  // apply_integrator(TRAPEZOIDAL, i);
+  apply_integrator(SIMPSON, i);
   if (i->integrate) {
-    res = i->integrate(i->op, 0, 1, 4);
-    printf("result of trapezoidal integration is %.3f\n", res);
+    res = i->integrate(i->op, 0, 1, 100);
+    printf("result of integration is %.3f\n", res);
   } else {
     printf("integration not applied successfully!\n");
   }
