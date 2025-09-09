@@ -21,4 +21,5 @@ float vec_dot(Vector *a, Vector *b);
 float vec_norm(Vector *v);
 void print_vec(Vector *v);
 
+
 #endif /* ___VECTOR_H___ */
