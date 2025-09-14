@@ -5,12 +5,6 @@
 
 static hash_table_p_t integral_hash;
 
-void apply_to_vec2(Vector *v, float x, binary_op f) {
-  for (size_t i = 0; i < v->size; i++) {
-    (v->data)[i] = f(x, (v->data)[i]);
-  }
-}
-
 double dot_custom(Vector *u, Vector *v, binary_op f) {
   double dot = 0.0f;
 

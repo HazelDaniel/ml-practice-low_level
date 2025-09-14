@@ -1,9 +1,9 @@
 #ifndef ___F_POINTERS___
 #define ___F_POINTERS___
 
-// #include "../../include/barrel.h"
+#include "../../include/barrel.h"
 #include "hash_tables.h"
-#include "barrel.h"
+// #include "barrel.h"
 
 
 typedef double (*unary_vec_fn)(double);
