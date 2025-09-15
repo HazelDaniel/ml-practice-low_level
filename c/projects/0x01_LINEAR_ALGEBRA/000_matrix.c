@@ -10,7 +10,7 @@ Matrix *create_matrix(unsigned int r, unsigned int c, int init) {
 
   new_mat->rows = r;
   new_mat->columns = c;
-  new_mat->data = malloc((r * c) * sizeof(float));
+  new_mat->data = calloc((r * c), sizeof(float));
   new_mat->is_transposed = 0;
   new_mat->is_view = 0;
   new_mat->view_vectors = 0;
@@ -28,15 +28,26 @@ Matrix *create_matrix_view(Matrix *m) {
 
 Matrix *transpose_matrix(Matrix *m) {
   Matrix *w = create_matrix_view(m);
+  Matrix *current = m;
 
   if (!w) {
     return w;
   }
 
-  w->data = m->data, w->owner = m;
-  w->is_view = 1, w->is_transposed = 1;
+
+  if (m->is_view) {
+
+    while (current->owner) { // we assume that is_view is true IFF it has owner
+      current = current->owner;
+    }
+  }
+
+  w->owner = current;
+  w->data = current->data;
+  w->is_view = 1, w->is_transposed = !m->is_transposed;
   w->rows = m->columns, w->columns = m->rows;
-  m->view_matrices++;
+  w->view_vectors = 0, w->view_matrices = 0;
+  current->view_matrices++;
 
   return w;
 }
@@ -90,6 +101,13 @@ Vector *create_matrix_slice(Matrix *m, size_t index, VecOrientation o) {
 }
 
 void destroy_matrix(Matrix *m) {
+  /**
+   * TODO:
+   * - instead of throwing error:
+   * - flag owner matrix as locked to disallow further referencing
+   * - when freeing a view matrix, check if its owner has been locked,
+   * - if yes, free the owner as well once its view_vectors & view_matrix count both  hit 0
+   */
   if (m->view_vectors) {
     printf("[destruction error]: matrix has view vectors refrencing it. so not destroyed!\n");
     return;
@@ -102,9 +120,11 @@ void destroy_matrix(Matrix *m) {
 
   if (m->is_view) {
     m->data = NULL;
+
     if (m->owner) {
-      (m->owner)->view_matrices--;
+      ((m->owner)->view_matrices)--;
     }
+
     free(m);
     m = NULL;
     return;
@@ -211,8 +231,10 @@ _Bool mat_cmp(Matrix *m, Matrix *n) {
     return 0;
   }
 
-  for (int i = 0; i < (m->rows) * (m->columns); i++) {
-    ans = ans && (m->data[i] == n->data[i]);
+  for (int i = 0; i < m->rows; i++) {
+    for (int j = 0; j < m->columns; j++) {
+      ans = ans && (mat_get(m, (i + 1),  (j + 1)) == mat_get(n, (i + 1), (j + 1)));
+    }
   }
 
   return ans;

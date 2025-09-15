@@ -1,6 +1,8 @@
 #include <math.h>
 #include <stdio.h>
+#include "include/globals.h"
 #include "include/vector.h"
+#include "include/matrix.h"
 
 Vector *init_vector(size_t size) {
   Vector *new_vec = malloc(sizeof(Vector));
@@ -20,12 +22,14 @@ Vector *init_vector(size_t size) {
 }
 
 void destroy_vector(Vector *v) {
-
   if (!v) {
     return;
   }
 
   if (v->is_view) {
+    if (v->set) {
+      (v->set)->view_vectors--;
+    }
     v->set = NULL;
     free(v);
     return;
@@ -33,6 +37,7 @@ void destroy_vector(Vector *v) {
 
   if (v->data) {
     free(v->data);
+    v->set = NULL;
   }
 
   free(v);
@@ -66,6 +71,28 @@ float vec_get(Vector *v, size_t position) {
   if (position > v->size) {
     printf("[input error]: OUT OF VECTOR BOUNDS!\n");
     exit(1);
+  }
+
+  if (v->is_view) {
+
+    if (v->set) {
+
+      switch (v->orientation) {
+        case HORIZONTAL: {
+          return mat_get((v->set), v->index, position);
+        };
+        case VERTICAL: {
+          return mat_get((v->set), position, v->index);
+        };
+        default: {
+          printf("[input error]: INVALID ORIENTATION!\n");
+          exit(1);
+        }
+      }
+    } else {
+      printf("[vec_get/warning]: this vector doesn't have an owner so, invariant violated.\n");
+      return 0.0f;
+    }
   }
 
   return (v->data)[position - 1];

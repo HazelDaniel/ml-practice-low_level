@@ -52,6 +52,7 @@ int main(void) {
   if (D) {
     mat_set(D, 1, 1, 1.0f);
     mat_set(D, 2, 2, 1.0f);
+    mat_set(D, 2, 1, 1.0f);
 
     _Bool x = is_symmetric(D);
 
