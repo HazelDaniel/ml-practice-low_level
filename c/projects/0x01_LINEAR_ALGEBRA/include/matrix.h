@@ -8,6 +8,7 @@
 #include "stdlib.h"
 
 typedef struct Vector Vector;
+typedef struct VectorSet VectorSet;
 
 typedef struct Matrix {
   struct Matrix        *owner;
@@ -22,8 +23,12 @@ typedef struct Matrix {
 
 Matrix *create_matrix(unsigned int r, unsigned int c, int init);
 Matrix *create_matrix_view(Matrix *m);
-Vector *create_matrix_slice(Matrix *m, size_t index, VecOrientation o);
+Vector *get_matrix_slice(Matrix *m, size_t index, VecOrientation o);
+void set_matrix_slice(Matrix *m, size_t index, Vector *v);
 Matrix *transpose_matrix(Matrix *m);
+Matrix *mat_from_vec_set(VectorSet *vs);
+void unitize_matrix(Matrix *m, VecOrientation o);
+Matrix *orthogonalize_matrix(Matrix *m, bool copy, VecOrientation o);
 void destroy_matrix(Matrix *m);
 void print_matrix(Matrix *m);
 Matrix *add_matrices(Matrix *m, Matrix *n);

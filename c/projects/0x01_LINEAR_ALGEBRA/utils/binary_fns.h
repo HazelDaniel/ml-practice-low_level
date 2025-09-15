@@ -1,7 +1,8 @@
 #ifndef ___BINARY_FNS___
 #define ___BINARY_FNS___
 
-double multiply_by(double, double);
+double binary_multiply(double, double);
+double binary_divide(double a, double b);
 double add_to(double, double);
 
 #endif /* ___BINARY_FNS___ */

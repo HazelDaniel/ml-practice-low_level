@@ -3,6 +3,7 @@
 
 #include "text_buffer.h"
 
+
 typedef struct {
   int rows;
   int columns;
@@ -18,5 +19,6 @@ void mat_set(Matrix *m, unsigned int r, unsigned int c, float d);
 float mat_get(Matrix *m, int r, int c);
 Matrix *create_matrix(unsigned int r, unsigned int c, int init);
 TextBuffer *mat_to_text_buffer(Matrix *m);
+
 
 #endif /* ___MATRIX_H___ */
