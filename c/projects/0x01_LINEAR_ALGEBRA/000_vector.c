@@ -137,18 +137,23 @@ void destroy_vector_set(VectorSet *vs) {
   if (!vs) return;
 
   if (vs->depth == SHALLOW) {
-    free(vs->elements);
-    vs->elements = NULL;
-    free(vs);
-  } else {
-
     for (int i = 0; i < vs->count; i++) {
+      if (vs->elements[i] && vs->elements[i]->is_view) {
+        (vs->elements[i]->set)->view_vectors--;
+      }
+      free(vs->elements[i]);
+    }
+  } else {
+    for (int i = 0; i < vs->count; i++) {
+      if (vs->elements[i] && vs->elements[i]->is_view) {
+        (vs->elements[i]->set)->view_vectors--;
+      }
       destroy_vector((vs->elements)[i]);
     }
-
-    vs->elements = NULL;
-    free(vs);
   }
+  free(vs->elements);
+  vs->elements = NULL;
+  free(vs);
 }
 
 void vec_set(Vector *v, const float *values, size_t count) {

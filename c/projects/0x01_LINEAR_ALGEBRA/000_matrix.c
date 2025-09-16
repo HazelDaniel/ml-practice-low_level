@@ -62,7 +62,8 @@ Vector *get_matrix_slice(Matrix *m, size_t index, VecOrientation o) {
 
   if (index < 1) {
     printf("[input error]: only 1-based values are allowed! \n");
-    return a;
+    free(a);
+    return NULL;
   }
 
   switch (o) {
@@ -97,6 +98,7 @@ Vector *get_matrix_slice(Matrix *m, size_t index, VecOrientation o) {
   a->set = m;
   a->is_view = true;
   a->orientation = o;
+  m->view_vectors++;
 
   return a;
 }
@@ -116,7 +118,6 @@ void set_matrix_slice(Matrix *m, size_t index, Vector *v) {
     case HORIZONTAL: {
       if (index > m->rows || v->size > m->columns) {
         printf("[input error/set_matrix_slice]: OUT OF BOUNDS!\n");
-        printf("size (%d), m.rows (%d), m.columns(%d), index (%d)\n", (int)v->size, (int)m->rows, (int)m->columns, (int)index);
         return;
       }
 
@@ -125,7 +126,6 @@ void set_matrix_slice(Matrix *m, size_t index, Vector *v) {
     case VERTICAL: {
       if (index > m->columns || v->size > m->rows) {
         printf("[input error/set_matrix_slice]: OUT OF BOUNDS!\n");
-        printf("size (%d), m.rows (%d), m.columns(%d), index (%d)\n", (int)v->size, (int)m->rows, (int)m->columns, (int)index);
         return;
       }
 
@@ -189,7 +189,7 @@ void unitize_matrix(Matrix *m, VecOrientation o) {
     return;
   }
 
-  size_t length = o == HORIZONTAL ? m->columns : m->rows;
+  size_t length = o == HORIZONTAL ? m->rows : m->columns;
 
   for (int i = 0; i < length; i++) {
     Vector *entry = get_matrix_slice(m, (i + 1), o);
@@ -211,6 +211,7 @@ void unitize_matrix(Matrix *m, VecOrientation o) {
 }
 
 Matrix *orthogonalize_matrix(Matrix *m, bool copy, VecOrientation o) {
+  //TODO: handle rank-deficient matrices gracefully instead of exiting at division by zero
   Matrix *ortho_mat = NULL;
   VectorSet *vs = NULL;
   Vector *proj = NULL;
@@ -253,7 +254,7 @@ Matrix *orthogonalize_matrix(Matrix *m, bool copy, VecOrientation o) {
       proj = vec_project((vs->elements)[j + 1], (vs->elements)[j]);
       tmp = sum_vec;
       sum_vec = vec_sum(tmp, proj);
-      free(proj);
+      destroy_vector(proj);
 
       if (!sum_vec) {
         destroy_vector(tmp);
@@ -269,6 +270,7 @@ Matrix *orthogonalize_matrix(Matrix *m, bool copy, VecOrientation o) {
     curr_vec = vec_sub(tmp, sum_vec);
     destroy_vector(sum_vec);
     set_matrix_slice(target, (i + 1), curr_vec);
+    destroy_vector(curr_vec);
   }
 
   unitize_matrix(target, o);
@@ -290,6 +292,7 @@ void destroy_matrix(Matrix *m) {
    * - if yes, free the owner as well once its view_vectors & view_matrix count both  hit 0
    */
   if (m->view_vectors) {
+    printf("view vectors referencing the orthogonalized: %d\n", (int)m->view_vectors);
     printf("[destruction error]: matrix has view vectors refrencing it. so not destroyed!\n");
     return;
   }

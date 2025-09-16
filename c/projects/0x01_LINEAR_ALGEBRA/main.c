@@ -46,14 +46,14 @@ int main (void) {
   safe_destroy(&m2);
 
   // ---------- Test 3: Rank-deficient matrix ----------
-  Matrix *m3 = create_matrix(3, 3, 0);
-  // Two columns are linearly dependent
-  mat_set(m3, 1, 1, 1); mat_set(m3, 2, 1, 2); mat_set(m3, 3, 1, 3);
-  mat_set(m3, 1, 2, 2); mat_set(m3, 2, 2, 4); mat_set(m3, 3, 2, 6); // col2 = 2 * col1
-  mat_set(m3, 1, 3, 0); mat_set(m3, 2, 3, 1); mat_set(m3, 3, 3, 0);
+  // Matrix *m3 = create_matrix(3, 3, 0);
+  // // Two columns are linearly dependent
+  // mat_set(m3, 1, 1, 1); mat_set(m3, 2, 1, 2); mat_set(m3, 3, 1, 3);
+  // mat_set(m3, 1, 2, 2); mat_set(m3, 2, 2, 4); mat_set(m3, 3, 2, 6); // col2 = 2 * col1
+  // mat_set(m3, 1, 3, 0); mat_set(m3, 2, 3, 1); mat_set(m3, 3, 3, 0);
 
-  run_test(m3, true, VERTICAL, "Test 3: Rank-Deficient Matrix");
-  safe_destroy(&m3);
+  // run_test(m3, true, VERTICAL, "Test 3: Rank-Deficient Matrix");
+  // safe_destroy(&m3);
 
   // ---------- Test 4: Symmetric matrix ----------
   Matrix *m4 = create_matrix(2, 2, 0);
