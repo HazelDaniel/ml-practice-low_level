@@ -23,7 +23,7 @@ Vector *init_vector(size_t size) {
   new_vec->data = calloc(size, sizeof(float));
   new_vec->size = size;
   new_vec->orientation = VERTICAL;
-  new_vec->is_view = 0;
+  new_vec->is_view = false;
   new_vec->set = NULL;
 
   if (!new_vec->data) {
@@ -230,7 +230,7 @@ Vector *vec_sub(Vector *a, Vector *b) {
   sub_vec = init_vector(a->size);
 
   for (size_t i = 0; i < sub_vec->size; i++) {
-    (sub_vec->data)[i] = (a->data)[i] - (b->data)[i];
+    (sub_vec->data)[i] = vec_get(a, (i + 1)) - vec_get(b, (i + 1));
   }
 
   return sub_vec;

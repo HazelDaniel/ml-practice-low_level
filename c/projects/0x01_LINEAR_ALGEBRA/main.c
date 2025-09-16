@@ -13,6 +13,7 @@ void run_test(Matrix *m, bool copy, VecOrientation o, const char *label) {
   printf("\n=== %s ===\n", label);
   printf("Original Matrix:\n");
   print_matrix(m);
+  puts("");
 
   Matrix *Q = orthogonalize_matrix(m, copy, o);
 

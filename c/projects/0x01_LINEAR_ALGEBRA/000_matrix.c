@@ -161,7 +161,7 @@ Matrix *mat_from_vec_set(VectorSet *vs) {
   }
 
   rows = (vs->orientation == HORIZONTAL) ? vs->count : (vs->elements[0])->size;
-  columns = (vs->orientation = HORIZONTAL) ? (vs->elements[0])->size : vs->count;
+  columns = (vs->orientation == HORIZONTAL) ? (vs->elements[0])->size : vs->count;
 
   m = create_matrix(rows, columns, 0);
 
@@ -191,7 +191,6 @@ void unitize_matrix(Matrix *m, VecOrientation o) {
 
   size_t length = o == HORIZONTAL ? m->columns : m->rows;
 
-
   for (int i = 0; i < length; i++) {
     Vector *entry = get_matrix_slice(m, (i + 1), o);
     Vector *tmp = entry;
@@ -209,12 +208,12 @@ void unitize_matrix(Matrix *m, VecOrientation o) {
     set_matrix_slice(m, (i + 1), entry);
     destroy_vector(entry);
   }
-
 }
 
 Matrix *orthogonalize_matrix(Matrix *m, bool copy, VecOrientation o) {
   Matrix *ortho_mat = NULL;
   VectorSet *vs = NULL;
+  Vector *proj = NULL;
 
   if (!m) {
     return ortho_mat;
@@ -239,7 +238,6 @@ Matrix *orthogonalize_matrix(Matrix *m, bool copy, VecOrientation o) {
 
   set_matrix_slice(target, 1, (vs->elements)[0]);
 
-  // TODO: logical error in  algo, find and fix
   for (int i = 1; i < vs->count; i++) {
     Vector *sum_vec = init_vector(o == HORIZONTAL ? target->columns : target->rows);
     Vector *curr_vec = (vs->elements)[i];
@@ -252,7 +250,10 @@ Matrix *orthogonalize_matrix(Matrix *m, bool copy, VecOrientation o) {
     }
 
     for (int j = 0; j < i; j++) {
-      sum_vec = vec_sub(tmp, vec_project((vs->elements)[j + 1], (vs->elements)[j]));
+      proj = vec_project((vs->elements)[j + 1], (vs->elements)[j]);
+      tmp = sum_vec;
+      sum_vec = vec_sum(tmp, proj);
+      free(proj);
 
       if (!sum_vec) {
         destroy_vector(tmp);
@@ -260,18 +261,15 @@ Matrix *orthogonalize_matrix(Matrix *m, bool copy, VecOrientation o) {
         if (copy) destroy_matrix(target);
         return NULL;
       }
+
+      destroy_vector(tmp);
     }
 
-    destroy_vector(tmp);
     tmp = curr_vec;
-    curr_vec = vec_sum(tmp, sum_vec);
+    curr_vec = vec_sub(tmp, sum_vec);
     destroy_vector(sum_vec);
-
-    set_matrix_slice(target, i, curr_vec);
+    set_matrix_slice(target, (i + 1), curr_vec);
   }
-
-  // puts("before unitizing matrix: ");
-  print_matrix(target);
 
   unitize_matrix(target, o);
   destroy_vector_set(vs);
