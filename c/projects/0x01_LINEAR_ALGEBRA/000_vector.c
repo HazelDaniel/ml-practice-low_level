@@ -156,7 +156,7 @@ void destroy_vector_set(VectorSet *vs) {
   free(vs);
 }
 
-void vec_set(Vector *v, const float *values, size_t count) {
+void vec_populate(Vector *v, const float *values, size_t count) {
   size_t limit = count < v->size ? count : v->size;
 
   if (v->is_view) {
@@ -173,6 +173,25 @@ void vec_set(Vector *v, const float *values, size_t count) {
   for (size_t i = 0; i < limit; i++) {
     (v->data)[i] = values[i];
   }
+}
+
+void vec_set(Vector *v, size_t index, float value) {
+  if (v->is_view) {
+    printf("[write error/vec_set]: a view vector is immutable, freeze to get a owned copy!\n");
+    return;
+  }
+
+  if (index < 1) {
+    printf("[input error/vec_set]: only 1-based values are allowed! \n");
+    return;
+  }
+
+  if (index > v->size) {
+    printf("[input error/vec_set]: out of vector bounds! \n");
+    return;
+  }
+
+  (v->data)[index - 1] = value;
 }
 
 float vec_get(Vector *v, size_t position) {

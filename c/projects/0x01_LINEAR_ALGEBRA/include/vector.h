@@ -32,7 +32,8 @@ VectorSet *vec_set_from_mat(Matrix *m, size_t size, VecOrientation o, VecCopyDep
 void destroy_vector(Vector *v);
 void destroy_vector_set(VectorSet *vs);
 Vector *freeze_vec_view(Vector *vec_view);
-void vec_set(Vector *v, const float *values, size_t count);
+void vec_populate(Vector *v, const float *values, size_t count);
+void vec_set(Vector *v, size_t index, float value);
 float vec_get(Vector *v, size_t position);
 Vector *vec_sum(Vector *a, Vector *b);
 Vector *vec_sub(Vector *a, Vector *b);
